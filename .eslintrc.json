@@ -9,6 +9,10 @@
     "no-trailing-spaces": "off",
     "no-tabs": "off",
     "consistent-return": "off",
-    "react/prefer-stateless-function": [0]
+    "react/prefer-stateless-function": [0],
+    "func-names": "off",
+    "prefer-template": "off",
+    "comma-dangle": "off",
+    "comma-spacing": "off"
   }
 }
