@@ -16,21 +16,24 @@ exports.searchController = function (req, res) {
         $('div.question-summary').each((i, elm) => {
           result.push({
             title: $(elm)
-              .find('a')
+              .find('.result-link')
+              .children()
+              .children()
               .text(),
             question: $(elm)
-              .find('.excerpt')
+              .find('.started')
+              .find('a')
               .text(),
             votes: $(elm)
               .find('.vote-count-post')
-              .text()
+              .text(),
+            id: $(elm).attr('id')
           });
         });
 
         const reload = page.length - 3;
         // Total number of pages
-        console.log(page[reload]);
       }))
-    .then(() => console.log(result))
+
     .then(() => res.send({ result }));
 };

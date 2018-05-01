@@ -5,7 +5,7 @@ import { createStore, applyMiddleware } from 'redux';
 import { createLogger } from 'redux-logger';
 import ReduxThunk from 'redux-thunk';
 import reducers from './src/reducers';
-import Main from './src/components/Main';
+import Router from './src/Router';
 import { Spinner } from './src/components/common/Spinner';
 
 const middleware = applyMiddleware(ReduxThunk, createLogger());
@@ -16,7 +16,7 @@ class App extends Component {
     super(props);
     this.state = {
       isStoreLoading: false,
-      store,
+      store
     };
   }
 
@@ -29,7 +29,7 @@ class App extends Component {
         if (value && value.length) {
           const initialStore = JSON.parse(value);
           self.setState({
-            store: createStore(reducers, initialStore, middleware),
+            store: createStore(reducers, initialStore, middleware)
           });
         } else {
           self.setState({ store });
@@ -55,7 +55,7 @@ class App extends Component {
     } else if (!this.state.isStoreLoading) {
       return (
         <Provider store={this.state.store}>
-          <Main />
+          <Router />
         </Provider>
       );
     }

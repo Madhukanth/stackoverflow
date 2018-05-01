@@ -1,13 +1,22 @@
 import React, { Component } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Image } from 'react-native';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  Image,
+  FlatList
+} from 'react-native';
 import { connect } from 'react-redux';
 import axios from 'axios';
+import { Actions } from 'react-native-router-flux';
 import { searchChanged } from '../actions/SearchActions';
-import { Card, Header } from './common';
+import { Card, Spinner } from './common';
 
 class Main extends Component {
   state = {
-    hello: []
+    hello: [],
+    loading: false
   };
   get = () => {
     axios({
@@ -16,16 +25,16 @@ class Main extends Component {
       data: {
         search: this.props.search
       }
-    }).then((res) => {
-      console.log(res.data.result);
-      this.setState({ hello: res.data.result });
-    });
+    })
+      .then((res) => {
+        this.setState({ hello: res.data.result });
+      })
+      .then(() => this.setState({ loading: false }));
   };
 
   render() {
     return (
       <Card>
-        <Header headerText="StackOverFlow" />
         <View
           style={{
             flexDirection: 'row',
@@ -47,7 +56,10 @@ class Main extends Component {
           />
           <TouchableOpacity
             style={{ paddingTop: 10, marginLeft: 50 }}
-            onPress={() => this.get()}
+            onPress={() => {
+              this.setState({ loading: true });
+              this.get();
+            }}
           >
             <Image
               style={{
@@ -58,13 +70,56 @@ class Main extends Component {
             />
           </TouchableOpacity>
         </View>
-        {this.state.hello.map(item => (
-          <View>
-            <Text style={{ paddingBottom: 5 }}>{item.title}</Text>
-            <Text style={{ paddingBottom: 5 }}>{item.question}</Text>
-            <Text style={{ paddingBottom: 5 }}>{item.votes}</Text>
-          </View>
-        ))}
+        {(() => {
+          if (this.state.loading) {
+            return (
+              <View style={{ marginTop: 200, height: 100 }}>
+                <Spinner size="large" />
+              </View>
+            );
+          } else if (!this.state.loading) {
+            return (
+              <FlatList
+                data={this.state.hello}
+                renderItem={({ item }) => (
+                  <View style={{ borderBottomColor: 'black', borderWidth: 1 }}>
+                    <TouchableOpacity
+                      onPress={() =>
+                        Actions.answer({ id: item.id, title: item.title })
+                      }
+                    >
+                      <Text
+                        key={item.title}
+                        style={{
+                          paddingBottom: 5,
+                          color: 'blue',
+                          fontWeight: 'bold',
+                          fontSize: 15
+                        }}
+                      >
+                        {item.title}
+                      </Text>
+                      <Text
+                        key={item.title}
+                        style={{ paddingBottom: 5, fontStyle: 'italic' }}
+                      >
+                        Asked by : {item.question}
+                      </Text>
+                      <Text
+                        key={item.title}
+                        style={{ paddingBottom: 5, fontWeight: 'bold' }}
+                      >
+                        Votes:{item.votes}
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                )}
+                keyExtractor={item => item.id}
+                numColumns={1}
+              />
+            );
+          }
+        })()}
       </Card>
     );
   }
